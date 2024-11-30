@@ -1,3 +1,8 @@
+# Config
+
+# Participants
+# - Each participant should have a name and an email
+# - Additionally, each participant can be marked as an organizer (optional, default=True)
 participants:
     - name: "name1"
       email: "some_email1@example.com"
@@ -7,20 +12,21 @@ participants:
     - name: "name3"
       email: "some_email3@example.com"
 
+# Email template
+# - Three placeholders can be used in the template: {giver}, {receiver}, and {organizers}
+# - {giver} and {receiver} will be replaced by the names of the matched givers and receivers
+# - {organizers} will be replaced by the name(s) of the participants where organizer == True
+# NOTE: If you want to write out the organizer(s) yourself, just skip the {organizers} placeholder
 email_template:
-    # There should be three placeholders in the template: {giver}, {receiver}, and {organizers}
-    # {giver} and {receiver} will be replaced by the names of the matched givers and receivers
-    # {organizers} will be replaced by the name(s) of the participants where organizer=True
-    # Note: If you want to write the organizers yourself, just remove the {organizers} placeholder
     subject: "Secret Santa!"
     body: |
         Hi {giver},
 
-        The moment we've all been waiting for is here! 🎉 You’ve been chosen as the Secret Santa for:
+        The moment we've all been waiting for is here! You have been chosen as the Secret Santa for:
 
-        **{receiver}**  
+        {receiver}
 
-        Please keep this information secret until the big reveal! 🤫
+        Please keep this information secret until the big reveal!
 
         Make sure to find a thoughtful gift that fits within our agreed budget.
 

@@ -2,7 +2,7 @@ import sys
 
 from .config import parse_args, load_config, get_organizers
 from .pick import pick_santas
-from .email import compile_emails, send_emails
+from .email import compile_emails, handle_emails
 
 
 def main() -> None:
@@ -13,10 +13,10 @@ def main() -> None:
     emails = compile_emails(
         picks=picks,
         organizers=organizers,
-        sender=cfg.sender,
+        sender_email=cfg.sender_email,
         email_template=cfg.email_template,
     )
-    send_emails(emails=emails, dry_run=dry_run)
+    handle_emails(emails=emails, smtp_token=cfg.smtp_token, dry_run=dry_run)
 
 
 if __name__ == "__main__":

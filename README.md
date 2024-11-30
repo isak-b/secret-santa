@@ -10,7 +10,16 @@ Author: Isak Barbopoulos (isak@xaros.org)
 
 ## Setup
 
-Open `secret-santa/config.yaml` and modify the settings to suit your event.
+1. Open `config.yaml` and modify the settings to suit your event.
+
+2. Create a SMTP token for gmail:
+
+    [Google app passwords](https://myaccount.google.com/apppasswords)
+
+3. Add the SMTP token to the environment in one of two ways:
+
+    a. `export SMTP_TOKEN="your token"`
+    b. Create an .env file in the root of the project and `SMTP_TOKEN="your token"` 
 
 ## Usage
 
