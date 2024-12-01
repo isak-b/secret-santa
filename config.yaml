@@ -1,8 +1,9 @@
 # Config
+seed:  # NOTE: Only set this if you want the same picks each time (for reproducibility)
 
 # Participants
 # - Each participant should have a name and an email
-# - Additionally, each participant can be marked as an organizer (optional, default=True)
+# - Additionally, each participant can be marked as an organizer (optional, default=False)
 participants:
     - name: "name1"
       email: "some_email1@example.com"

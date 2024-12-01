@@ -4,7 +4,10 @@ import yaml
 import dotenv
 
 from pydantic import BaseModel, EmailStr
-from typing import Optional, get_args
+from typing import get_args
+
+from .email import EmailTemplate
+from .pick import Participant
 
 dotenv.load_dotenv(override=True)
 DEFAULT_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config.yaml")
@@ -13,22 +16,12 @@ DEFAULT_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config.
 class MissingConfigKeyError(Exception): ...
 
 
-class Participant(BaseModel):
-    name: str
-    email: EmailStr
-    organizer: Optional[bool] = False
-
-
-class EmailTemplate(BaseModel):
-    subject: str
-    body: str
-
-
 class Config(BaseModel):
     smtp_token: str | None = None
     sender_email: EmailStr
     email_template: EmailTemplate
     participants: list[Participant]
+    seed: int | None = None
 
 
 def parse_args(args: list[str]) -> tuple[str, bool]:

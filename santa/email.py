@@ -1,20 +1,32 @@
 from smtplib import SMTP
 
+from email.mime.text import MIMEText
+from typing import Literal
 from pydantic import BaseModel, EmailStr
 from simple_term_menu import TerminalMenu
 
-from .config import EmailTemplate
 from .pick import Pick
 
 DELIM = "-" * 50
+ACTION = Literal["send", "print", "skip", "send all", "quit"]
+
+
+class EmailTemplate(BaseModel):
+    subject: str
+    body: str
 
 
 def action_send(email, smtp_token: str):
     print(f"Sending email to {email.giver_email}\n")
+    msg = MIMEText(email.body, "plain", "utf-8")
+    msg["From"] = email.sender_email
+    msg["To"] = email.giver_email
+    msg["Subject"] = email.subject
+
     con = SMTP("smtp.gmail.com", port=587)
     con.starttls()
-    con.login(email.sender_email, smtp_token)
-    con.sendmail(email.sender_email, email.giver_email, f"Subject: {email.subject}\n\n{email.body}")
+    con.login(user=email.sender_email, password=smtp_token)
+    con.sendmail(from_addr=email.sender_email, to_addrs=email.giver_email, msg=msg.as_string())
     print("Email sent!\n")
     input("Press enter to continue...")
 
@@ -64,6 +76,16 @@ def compile_emails(
     return emails
 
 
+def select_action(dry_run: bool = False) -> ACTION:
+    all_actions = ["send", "print", "skip", "send all", "quit"]
+    exclude = ["send", "send all"] if dry_run else []
+    actions = [action for action in all_actions if action not in exclude]
+    terminal_menu = TerminalMenu(actions, title="Select action:")
+    terminal_menu.show()
+    action = terminal_menu.chosen_menu_entry
+    return action
+
+
 def handle_emails(emails: list[Email], smtp_token: str = None, dry_run: bool = False, i: int = 0) -> None:
     if i >= len(emails):
         action_quit()
@@ -73,12 +95,7 @@ def handle_emails(emails: list[Email], smtp_token: str = None, dry_run: bool = F
     print(f"FROM: {emails[i].sender_email}")
     print(f"TO: {emails[i].giver_email}\n")
 
-    # Select action
-    actions = ["send", "print", "skip", "send all", "quit"]
-    actions = [action for action in actions if dry_run is False or action not in ["send", "send all"]]
-    terminal_menu = TerminalMenu(actions, title="Select action:")
-    terminal_menu.show()
-    action = terminal_menu.chosen_menu_entry
+    action = select_action(dry_run=dry_run)
 
     # Check SMTP token
     if action in ["send", "send all"] and smtp_token is None:
@@ -90,6 +107,7 @@ def handle_emails(emails: list[Email], smtp_token: str = None, dry_run: bool = F
         handle_emails(emails=emails, smtp_token=smtp_token, dry_run=dry_run, i=i + 1)
     elif action == "send all":
         action_send_all(emails=emails[i:], smtp_token=smtp_token)
+        action_quit()
     elif action == "print":
         # NOTE: print does not increase i
         action_print(email=emails[i])

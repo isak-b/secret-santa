@@ -1,4 +1,5 @@
 pyyaml
 pydantic
 pydantic[email]
+python-dotenv
 simple-term-menu==1.6.4
